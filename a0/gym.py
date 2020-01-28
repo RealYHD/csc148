@@ -92,8 +92,9 @@ class Instructor:
         >>> instructor.name
         'Matylda'
         """
-        # TODO: implement this method!
-        pass
+        self.name = instructor_name
+        self._id = instructor_id
+        self._certificates = []
 
     def get_id(self) -> int:
         """Return the id of this Instructor.
@@ -102,8 +103,7 @@ class Instructor:
         >>> instructor.get_id()
         1
         """
-        # TODO: implement this method!
-        pass
+        return self._id
 
     def add_certificate(self, certificate: str) -> bool:
         """Add the <certificate> to this instructor's list of certificates iff
@@ -117,8 +117,10 @@ class Instructor:
         >>> instructor.add_certificate('Strength Training')
         False
         """
-        # TODO: implement this method!
-        pass
+        if certificate in self._certificates:
+            return False
+        self._certificates.append(certificate)
+        return True
 
     def get_num_certificates(self) -> int:
         """Return the number of certificates held by this instructor.
@@ -129,8 +131,7 @@ class Instructor:
         >>> instructor.get_num_certificates()
         1
         """
-        # TODO: implement this method!
-        pass
+        return len(self._certificates)
 
     def can_teach(self, workout_class: WorkoutClass) -> bool:
         """Return True iff this instructor has all the required certificates to
@@ -145,8 +146,11 @@ class Instructor:
         >>> matylda.can_teach(kickboxing)
         True
         """
-        # TODO: implement this method!
-        pass
+        required = workout_class.get_required_certificates()
+        for cert in required:
+            if not cert in self._certificates:
+                return False
+        return True
 
 
 class Gym:
@@ -220,8 +224,10 @@ class Gym:
         >>> ac.add_instructor(diane)
         True
         """
-        # TODO: implement this method!
-        pass
+        if instructor.get_id() in self._instructors:
+            return False
+        self._instructors[instructor.get_id()] = instructor
+        return True
 
     def add_workout_class(self, workout_class: WorkoutClass) -> bool:
         """Add a <workout_class> to this Gym iff the <workout_class> has not
@@ -233,9 +239,14 @@ class Gym:
         >>> kickboxing = WorkoutClass('Kickboxing', ['Strength Training'])
         >>> ac.add_workout_class(kickboxing)
         True
+
+        >>> ac.add_workout_class(kickboxing)
+        False
         """
-        # TODO: implement this method!
-        pass
+        if workout_class.get_name() in self._workouts:
+            return False
+        self._workouts[workout_class.get_name()] = workout_class
+        return True
 
     def add_room(self, name: str, capacity: int) -> bool:
         """Add a room with a <name> and <capacity> to this Gym iff the room
@@ -246,9 +257,14 @@ class Gym:
         >>> ac = Gym('Athletic Centre')
         >>> ac.add_room('Dance Studio', 50)
         True
+
+        >>> ac.add_room('Dance Studio', 25)
+        False
         """
-        # TODO: implement this method!
-        pass
+        if name in self._rooms:
+            return False
+        self._rooms[name] = capacity
+        return True
 
     def schedule_workout_class(self, time_point: datetime, room_name: str,
                                workout_name: str, instr_id: int) -> bool:
@@ -285,9 +301,50 @@ class Gym:
         >>> ac.schedule_workout_class(sep_9_2019_12_00, 'Dance Studio',\
         boot_camp.get_name(), diane.get_id())
         True
+
+        >>> john = Instructor(2, 'John')
+        >>> ac.add_instructor(john)
+        True
+        >>> jason = Instructor(3, 'Jason')
+        >>> john.add_certificate('Lifting 1')
+        True
+        >>> ac.add_instructor(jason)
+        True
+        >>> lifting_class = WorkoutClass('Lifting Class', ['Lifting 1'])
+        >>> ac.add_workout_class(lifting_class)
+        True
+        >>> ac.add_workout_class(boot_camp)
+        False
+        >>> swim_class = WorkoutClass('swim Class', ['Swim 1'])
+        >>> ac.add_workout_class(swim_class)
+        True
+        >>> ac.add_room('Lifting Room', 30)
+        True
+        >>> ac.schedule_workout_class(sep_9_2019_12_00, 'Lifting Room',\
+        lifting_class.get_name(), jason.get_id())
+        False
+        >>> ac.add_room('Pool Room', 50)
+        True
+        >>> sep_9_2019_13_00 = datetime(2019, 9, 9, 13, 0)
+        >>> ac.schedule_workout_class(sep_9_2019_13_00, 'Pool Room',\
+        swim_class.get_name(), john.get_id())
+        False
         """
-        # TODO: implement this method!
-        pass
+        instructor = self._instructors[instr_id]
+        workout = self._workouts[workout_name]
+        if not instructor.can_teach(workout):
+            return False
+        if time_point in self._schedule:
+            if room_name in self._schedule[time_point]:
+                return False
+            for room in self._schedule[time_point]:
+                if self._schedule[time_point][room][0] == instructor:
+                    return False
+        else:
+            self._schedule[time_point] = {}
+
+        self._schedule[time_point][room_name] = (instructor, workout, [])
+        return True
 
     def register(self, time_point: datetime, client: str, workout_name: str) \
             -> bool:
@@ -325,8 +382,16 @@ class Gym:
         >>> ac.register(sep_9_2019_12_00, 'Philip', 'Boot Camp')
         False
         """
-        # TODO: implement this method!
-        pass
+        offers = self._schedule[time_point]
+        for room in offers:
+            if client in offers[room][2]:
+                return False
+        for room in offers:
+            if offers[room][1].get_name() == workout_name and \
+                self._rooms[room] > len(offers[room][2]):
+                offers[room][2].append(client)
+                return True
+        return False
 
     def offerings_at(self, time_point: datetime) -> List[Tuple[str, str, str]]:
         """Return all the offerings that start at <time_point>.
@@ -355,8 +420,12 @@ class Gym:
         >>> ('Diane', 'Boot Camp', 'Dance Studio') in ac.offerings_at(t1)
         True
         """
-        # TODO: implement this method!
-        pass
+        result = []
+        offers = self._schedule[time_point]
+        for room in offers:
+            result.append((offers[room][0].name, offers[room][1].get_name()\
+                , room))
+        return result
 
     def instructor_hours(self, time1: datetime, time2: datetime) -> \
             Dict[int, int]:
@@ -392,8 +461,33 @@ class Gym:
         >>> ac.instructor_hours(t1, t2) == {1: 1, 2: 0}
         True
         """
-        # TODO: implement this method!
-        pass
+        instructors = {}
+        current_t = time1
+        while current_t <= time2:
+            if current_t in self._schedule:
+                instructors.update(self._instructor_appearances(current_t))
+            current_t = increment_hour_in_datetime(current_t)
+
+        for instr_id in self._instructors:
+            if not instr_id in instructors:
+                instructors[instr_id] = 0
+        return instructors
+    
+    def _instructor_appearances(self, time: datetime) -> Dict[int, int]:
+        """Return a dictionary with the key of the instructors id and the value
+        as the amount of times the instructor makes an appearance within the 
+        given hour.
+        """
+        appearances = {}
+        offerings = self._schedule[time]
+
+        for room in offerings:
+            ins_id = offerings[room][0].get_id()
+            if not ins_id in appearances:
+                appearances[ins_id] = 0
+            appearances[ins_id] += 1
+        return appearances
+
 
     def payroll(self, time1: datetime, time2: datetime, base_rate: float) \
             -> List[Tuple[int, str, int, float]]:
@@ -439,9 +533,20 @@ class Gym:
         >>> ac.payroll(t1, t2, 25.0)
         [(1, 'Diane', 1, 26.5), (2, 'David', 0, 0.0)]
         """
-        # TODO: implement this method!
-        pass
-
+        payroll = []
+        ins_ids = []
+        instructors_hours = self.instructor_hours(time1, time2)
+        for ins_id in instructors_hours:
+            ins_ids.append(ins_id)
+        ins_ids.sort()
+        for ins_id in ins_ids:
+            instructor = self._instructors[ins_id]
+            in_name = instructor.name
+            hours = instructors_hours[ins_id]
+            bonus = BONUS_RATE * instructor.get_num_certificates()
+            wage = (bonus + base_rate) * hours
+            payroll.append((ins_id, in_name, hours, wage))
+        return payroll
 
 def parse_instructor(file: TextIO, header: str) -> Instructor:
     """Return a new Instructor based on the data found in the file and the
@@ -594,15 +699,39 @@ def load_data(file_name: str, gym_name: str) -> Gym:
 
     return new_gym
 
+def increment_hour_in_datetime(time: datetime) -> datetime:
+    """Increments time by 1 hour.
+    >>> time1 = datetime(1, 1, 1, 1, 1, 1)
+    >>> time2 = datetime(1, 1, 1, 2, 1, 1)
+    >>> increment_hour_in_datetime(time1) == time2
+    True
+
+    >>> time1 = datetime(1, 1, 1, 23, 1, 1)
+    >>> time2 = datetime(1, 1, 2, 0, 1, 1)
+    >>> time2 == increment_hour_in_datetime(time1)
+    True
+    """
+    updated_time = time
+    if updated_time.hour < 23:
+        updated_time = updated_time.replace(hour=updated_time.hour + 1)
+    elif updated_time.day < 31:
+        updated_time = updated_time.replace(day=updated_time.day + 1, hour=0)
+    elif updated_time.month < 12:
+        updated_time = updated_time.replace(\
+            month=updated_time.month + 1, day=1, hour=0)
+    else:
+        updated_time = updated_time.replace(\
+            year=updated_time.year + 1, month=1, day=1, hour=0)
+    return updated_time
 
 if __name__ == '__main__':
-    import python_ta
-    python_ta.check_all(config={
-        'allowed-io': ['load_data'],
-        'allowed-import-modules': ['doctest', 'python_ta', 'typing',
-                                   'datetime'],
-        'max-attributes': 15,
-    })
+    #import python_ta
+    #python_ta.check_all(config={
+    #    'allowed-io': ['load_data'],
+    #    'allowed-import-modules': ['doctest', 'python_ta', 'typing',
+    #                               'datetime'],
+    #    'max-attributes': 15,
+    #})
 
     import doctest
     doctest.testmod()

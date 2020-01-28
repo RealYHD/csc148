@@ -99,4 +99,4 @@ def test_gym_one_instructor_one_hour_pay_no_certificates() -> None:
 
 if __name__ == '__main__':
     import pytest
-    pytest.main(['a0_sample_test.py'])
+    pytest.main(['a0/a0_sample_test.py'])
