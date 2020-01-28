@@ -221,8 +221,7 @@ def main() -> None:
         again = input('Again? (y/n) ')
         if again != 'y':
             return
-
-
+            
 if __name__ == '__main__':
     # Uncomment the lines below to check your work using
     # python_ta and doctest.
