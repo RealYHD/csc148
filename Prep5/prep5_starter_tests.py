@@ -42,11 +42,55 @@ from prep5 import LinkedList, _Node
 #       You may assume __len__ and append work properly in both versions that
 #       we test your test cases on.
 
+def test_contains_empty() -> None:
+    llst = LinkedList()
+    assert not 123 in llst
 
+def test_contains_lots() -> None:
+    llst = LinkedList()
+    llst.append(1)
+    llst.append(2)
+    llst.append(3)
+    llst.append(4)
+    llst.append(5)
+    llst.append(6)
+    llst.append("Pineapple.")
+    assert "Pineapple." in llst
 
+def test_contains_lots() -> None:
+    llst = LinkedList()
+    llst.append(1)
+    llst.append(2)
+    llst.append(3)
+    llst.append(4)
+    llst.append(5)
+    llst.append(6)
+    llst.append("Pineapple.")
+    assert "Pineapple." in llst
 
+def test_contains_None() -> None:
+    llst = LinkedList()
+    assert not None in llst
 
+def test_contains_Node_None() -> None:
+    llst = LinkedList()
+    llst.append(1)
+    llst.append(None)
+    llst.append(3)
+    llst.append("Abcdefg")
+    llst.append("Pineapple Pear")
+    llst.append(6)
+    assert None in llst
 
+def test_contains_part_of() -> None:
+    llst = LinkedList()
+    llst.append(1)
+    llst.append(None)
+    llst.append(3)
+    llst.append("Abcdefg")
+    llst.append("Pineapple Pear")
+    llst.append(6)
+    assert not "Pineapple" in llst
 
 # Below are provided sample test cases for your use. You are encouraged
 # to add additional test cases.
@@ -103,4 +147,4 @@ def test_append_one() -> None:
 
 if __name__ == '__main__':
     import pytest
-    pytest.main(['prep5_starter_tests.py'])
+    pytest.main(['Prep5/prep5_starter_tests.py'])
