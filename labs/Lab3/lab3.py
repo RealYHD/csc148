@@ -109,7 +109,7 @@ class NumberGame:
         print(f'Total is now {self.current}.')
 
 
-# TODO: Write classes Player, RandomPlayer, UserPlayer, and StrategicPlayer.
+#  Write classes Player, RandomPlayer, UserPlayer, and StrategicPlayer.
 class Player:
     """A player that plays the game. This class is abstract.
     === Attribute ===
@@ -191,7 +191,7 @@ def make_player(generic_name: str) -> Player:
     choice = int(input("1: Random Player\n2: User Player\n3: Strategic Player\n"))
 
     name = input(f'Enter a name for {generic_name}: ')
-    # TODO: Create and return some sort of Player.
+    #  Create and return some sort of Player.
     player = None
     if (choice == 1):
         # Random Player

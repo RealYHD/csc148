@@ -15,7 +15,7 @@ modified.
 from typing import Any, List, Optional
 
 
-# TODO: implement this class! Note that you'll need at least one private
+#  implement this class! Note that you'll need at least one private
 # attribute to store items.
 class Queue:
     """A first-in-first-out (FIFO) queue of items.

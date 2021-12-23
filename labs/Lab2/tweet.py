@@ -90,7 +90,6 @@ class Tweet:
         """
         self.content = new_content
 
-    # TODO: Suppose we want to turn this function into a method.
     # Which class should we put it into? Once you've decided, move it.
     def retweet(self, new_user: str, new_date: date) -> Tweet:
         """Return a copy of the given tweet with the new user and date.
@@ -180,7 +179,7 @@ class User:
         >>> u1.verbosity(2015)
         0
         """
-        # TODO: Implement this!
+        #  Implement this!
         # Hint: look up the attributes of date, found here:
         # https://docs.python.org/3/library/datetime.html#date-objects
         total = 0
@@ -205,7 +204,7 @@ class User:
         >>> u2.tweets[0].content
         'mwahahaha'
         """
-        # TODO: implement this!
+        #  implement this!
         for followID in range(len(self.follows)):
             for tweetI in range(len(self.follows[followID].tweets)):
                 followed = self.follows[followID]
